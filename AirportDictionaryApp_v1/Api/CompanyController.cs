@@ -45,6 +45,17 @@ namespace AirportDictionaryApp_v1.Api
             await  _companies.AddAsync(company);
             return Created();  
         }
+        //получить список всех авиокомпаний
+        [HttpGet]
+        public async Task<IActionResult> GetAllAsync()
+        {
+            List<Company> companies =await _companies.ListAllAsync();
+            if (companies == null)
+            {
+                return NotFound(new ErrorMessage(Type: "CompanyError", Message: $"companies not found"));
+            }
+            return Ok(companies);
+        }
         //ищем компанию по индексу
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetByIdAsync(int id)
