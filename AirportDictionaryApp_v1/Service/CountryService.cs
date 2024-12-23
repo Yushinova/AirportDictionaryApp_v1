@@ -39,7 +39,6 @@ namespace AirportDictionaryApp_v1.Service
         }
 
         //получить страну по коду
-
         public async Task<int?> GetCountryAsyncByCode(string code)
         {
 
@@ -49,6 +48,30 @@ namespace AirportDictionaryApp_v1.Service
                 return null;
             }
             else return country.Id;
+        }
+
+        //получить список аэропортов страны(задана по коду)
+        public async Task<List<Airport>?> GetCountryAirportsAsync(string code)
+        {
+            Country? country = await _db.Countries.Include(c=>c.Airports).FirstOrDefaultAsync(c => c.Code == code);
+            if (country == null)
+            {
+                return null;
+            }
+            List<Airport>? airports = country.Airports.ToList();
+            if (airports == null)
+            {
+                return null;
+            }
+            return airports;
+        }
+
+        //очистить данные всех стран с аэропортами
+        public async Task DeleteAllAsync()
+        {
+            List<Country> countries = await _db.Countries.Include(c=>c.Airports).ToListAsync();
+            _db.Countries.RemoveRange(countries);
+           await _db.SaveChangesAsync();
         }
     }
 }
